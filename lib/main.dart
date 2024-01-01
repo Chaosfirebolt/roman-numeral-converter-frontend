@@ -31,13 +31,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final inputController = TextEditingController();
+  final resultController = TextEditingController(text: 'Result');
+  String? result;
 
   @override
   Widget build(BuildContext context) {
@@ -47,30 +43,80 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Center(
           child: Text(widget.title),
         ),
-        titleTextStyle: const TextStyle(
-          color: Colors.yellowAccent,
-          fontSize: 25
-        ),
+        titleTextStyle:
+            const TextStyle(color: Colors.yellowAccent, fontSize: 25),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const SizedBox(
+                  width: 10,
+                ),
+                Flexible(
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    controller: inputController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter arabic or roman numeral',
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                FloatingActionButton(
+                  onPressed: () {
+                    var input = inputController.text;
+                    //TODO call backend
+                    setState(() {
+                      resultController.text = input;
+                    });
+                  },
+                  child: const Icon(Icons.change_circle),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const SizedBox(
+              height: 10,
             ),
+            Row(
+              children: <Widget>[
+                const SizedBox(
+                  width: 10,
+                ),
+                Flexible(
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    readOnly: true,
+                    controller: resultController,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+              ],
+            )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    inputController.dispose();
+    resultController.dispose();
   }
 }
