@@ -44,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: TextField(
                     textAlign: TextAlign.center,
                     controller: inputController,
+                    onSubmitted: formConvertAction,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       hintText: 'Enter arabic or roman numeral',
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 space,
                 FloatingActionButton(
-                  onPressed: convert,
+                  onPressed: buttonConvertAction,
                   child: const Icon(Icons.change_circle),
                 ),
                 space,
@@ -95,40 +96,48 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void convert() {
-    HttpUtil.getResult(inputController.text).then((value) => {
-          if (value.success)
-            {
-              romanResultController.text = value.successResult.roman,
-              arabicResultController.text =
-                  value.successResult.arabic.toString()
-            }
-          else
-            {
-              ScaffoldMessenger.of(homePageContext).showSnackBar(SnackBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                content: Container(
-                  padding: const EdgeInsets.all(20),
-                  height: 70,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                  ),
-                  child: Text(
-                    value.errorMessage,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 19,
-                    ),
-                  ),
+  void formConvertAction(String inputValue) {
+    _convert(inputValue);
+  }
+
+  void buttonConvertAction() {
+    _convert(inputController.text);
+  }
+
+  void _convert(String inputValue) {
+    HttpUtil.getResult(inputValue).then((value) => {
+      if (value.success)
+        {
+          romanResultController.text = value.successResult.roman,
+          arabicResultController.text =
+              value.successResult.arabic.toString()
+        }
+      else
+        {
+          ScaffoldMessenger.of(homePageContext).showSnackBar(SnackBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            content: Container(
+              padding: const EdgeInsets.all(20),
+              height: 70,
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              child: Text(
+                value.errorMessage,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontSize: 19,
                 ),
-                duration: const Duration(seconds: 3),
-                behavior: SnackBarBehavior.floating,
-              ))
-            }
-        });
+              ),
+            ),
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ))
+        }
+    });
   }
 
   @override
