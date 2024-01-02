@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'parser.dart';
+
 class RomanInteger {
 
   final String _roman;
@@ -22,19 +24,36 @@ class RomanInteger {
   }
 }
 
-class RequestResult {
+class Registration {
+  
+  final String _username;
+  final String _password;
+
+  Registration(this._username, this._password);
+
+  factory Registration.fromJson(String json) {
+    var map = jsonDecode(json);
+    return Registration(map['id'], map['pass']);
+  }
+
+  String get password => _password;
+
+  String get username => _username;
+}
+
+class RequestResult<T> {
 
   final bool _success;
-  final RomanInteger? _successResult;
+  final T? _successResult;
   final String? _errorMessage;
 
-  RequestResult({required bool success, required RomanInteger? successResult, required String? errorMessage})
+  RequestResult({required bool success, required T? successResult, required String? errorMessage})
       : _errorMessage = errorMessage, _successResult = successResult, _success = success;
 
-  factory RequestResult.fromData({required int response, required String json}) {
+  factory RequestResult.fromData({required int response, required Parser<T> parser, required String json}) {
     bool success = response == 200;
     if (success) {
-      return RequestResult(success: success, successResult: RomanInteger.fromJson(json), errorMessage: null);
+      return RequestResult(success: success, successResult: parser.parse(json), errorMessage: null);
     } else {
       return RequestResult(success: success, successResult: null, errorMessage: jsonDecode(json)['message']);
     }
@@ -42,7 +61,7 @@ class RequestResult {
 
   String get errorMessage => _errorMessage!;
 
-  RomanInteger get successResult => _successResult!;
+  T get successResult => _successResult!;
 
   bool get success => _success;
 }

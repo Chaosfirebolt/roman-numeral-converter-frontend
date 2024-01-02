@@ -1,9 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:roman_numeral_converter_frontend/roman_integer.dart';
+import 'http_util.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -99,33 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<RequestResult> getResult(String input) async {
-    var authority = const String.fromEnvironment('authority');
-    Uri uri = Uri.https(
-      authority,
-      '/convert',
-      {
-        'val': input,
-      },
-    );
-
-    String user = const String.fromEnvironment('u');
-    String pass = const String.fromEnvironment('p');
-    String encoded = base64Encode(utf8.encode('$user:$pass'));
-    final response = await http.get(
-      uri,
-      headers: {
-        HttpHeaders.authorizationHeader: 'Basic $encoded',
-      },
-    );
-    return RequestResult.fromData(
-      response: response.statusCode,
-      json: response.body,
-    );
-  }
-
   void convert() {
-    getResult(inputController.text).then((value) => {
+    HttpUtil.getResult(inputController.text).then((value) => {
           if (value.success)
             {
               romanResultController.text = value.successResult.roman,
